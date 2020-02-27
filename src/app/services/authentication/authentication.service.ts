@@ -22,7 +22,7 @@ export class AuthenticationService {
           password: password
         }
       )
-      .pipe(flatMap(r => from(this.unpackResponse(r))));
+      .pipe(flatMap(r => from(this.unpackResponse(r, password))));
   }
 
   logout(): Observable<any> {
@@ -31,9 +31,9 @@ export class AuthenticationService {
       .pipe(flatMap(() => from(this.identity.remove())));
   }
 
-  private async unpackResponse(r: any): Promise<boolean> {
+  private async unpackResponse(r: any, password?: string): Promise<boolean> {
     if (r.success) {
-      await this.identity.set(r.user, r.token);
+      await this.identity.set(r.user, r.token, password);
     }
     return r.success;
   }

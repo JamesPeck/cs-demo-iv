@@ -22,10 +22,14 @@ import { BrowserAuthPlugin } from '../browser-auth/browser-auth.plugin';
 import { SettingsService } from '../settings/settings.service';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
 
+interface MemberSesssion extends DefaultSession {
+  password?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class IdentityService extends IonicIdentityVaultUser<DefaultSession> {
+export class IdentityService extends IonicIdentityVaultUser<MemberSesssion> {
   private user: User;
 
   constructor(
@@ -53,19 +57,20 @@ export class IdentityService extends IonicIdentityVaultUser<DefaultSession> {
     }
   }
 
-  async set(user: User, token: string): Promise<void> {
+  async set(user: User, token: string, password?: string, authMode?: AuthMode): Promise<void> {
     this.user = user;
     // This is just one sample login workflow. It mostly respects the settigs
     // that were last saved with the exception that it uses "Biometrics OR Passcode"
     // in the case were both were saved and the user logged out.
-    const mode = (await this.useBiometrics())
-      ? AuthMode.BiometricOnly
-      : (await this.settings.usePasscode())
-      ? AuthMode.PasscodeOnly
-      : (await this.settings.useSecureStorageMode())
-      ? AuthMode.SecureStorage
-      : AuthMode.InMemoryOnly;
-    await this.login({ username: user.email, token: token }, mode);
+    // const mode = (await this.useBiometrics())
+    //   ? AuthMode.BiometricOnly
+    //   : (await this.settings.usePasscode())
+    //   ? AuthMode.PasscodeOnly
+    //   : (await this.settings.useSecureStorageMode())
+    //   ? AuthMode.SecureStorage
+    //   : AuthMode.InMemoryOnly;
+    const mode = authMode ? authMode : AuthMode.InMemoryOnly;
+    await this.login({ username: user.email, token: token, password: password }, mode);
   }
 
   private async useBiometrics(): Promise<boolean> {
@@ -85,7 +90,7 @@ export class IdentityService extends IonicIdentityVaultUser<DefaultSession> {
     return this.token;
   }
 
-  async restoreSession(): Promise<DefaultSession> {
+  async restoreSession(): Promise<MemberSesssion> {
     try {
       return await super.restoreSession();
     } catch (error) {
@@ -96,7 +101,7 @@ export class IdentityService extends IonicIdentityVaultUser<DefaultSession> {
     }
   }
 
-  onSessionRestored(session: DefaultSession) {
+  onSessionRestored(session: MemberSesssion) {
     console.log('Session Restored: ', session);
   }
 
