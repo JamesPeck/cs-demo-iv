@@ -23,17 +23,21 @@ export class LoginPage {
     private navController: NavController
   ) {}
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     try {
       this.initLoginType();
     } catch (e) {
       console.error('Unable to check token status', e);
     }
+    const hasSession = await this.identity.hasStoredSession();
+    if (hasSession) {
+      console.log('AuthMode:  ', await this.identity.getAuthMode());
+    }
   }
 
   async unlockClicked() {
     const hasSession = await this.identity.hasStoredSession();
-
+    console.log('AuthMode:  ', await this.identity.getAuthMode());
     if (hasSession) {
       const session = await this.identity.restoreSession();
       if (session && session.token) {

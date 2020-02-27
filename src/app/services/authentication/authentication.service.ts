@@ -6,12 +6,14 @@ import { flatMap } from 'rxjs/operators';
 import { environment } from '@env/environment';
 import { IdentityService } from '../identity/identity.service';
 import { User } from '@app/models';
+import { Storage } from '@ionic/storage';
+import { AuthMode } from '@ionic-enterprise/identity-vault';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
-  constructor(private http: HttpClient, private identity: IdentityService) {}
+  constructor(private http: HttpClient, private identity: IdentityService, private storage: Storage) {}
 
   login(email: string, password: string): Observable<boolean> {
     return this.http
@@ -32,8 +34,15 @@ export class AuthenticationService {
   }
 
   private async unpackResponse(r: any, password?: string): Promise<boolean> {
-    if (r.success) {
-      await this.identity.set(r.user, r.token, password);
+    const previousUser = await this.storage.get('previousUser');
+    const hasSession = await this.identity.hasStoredSession();
+    console.log('Previous User: ', previousUser);
+    if (!previousUser && !hasSession) {
+      if (r.success) {
+        this.storage.set('previousUser', r.user.username);
+        await this.identity.set(r.user, r.token, password);
+        await this.identity.setAuthMode(AuthMode.PasscodeOnly)
+      }
     }
     return r.success;
   }

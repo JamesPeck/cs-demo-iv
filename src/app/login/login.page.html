@@ -9,17 +9,15 @@
     <ion-list>
       <ion-item>
         <ion-label position="floating">E-Mail Address</ion-label>
-        <ion-input type="email" name="email" [(ngModel)]="email" #emailInput="ngModel" required email></ion-input>
+        <ion-input type="email" name="email" [(ngModel)]="email" #emailInput="ngModel" email></ion-input>
       </ion-item>
       <ion-item>
         <ion-label position="floating">Password</ion-label>
-        <ion-input type="password" name="password" [(ngModel)]="password" #passwordInput="ngModel" required></ion-input>
+        <ion-input type="password" name="password" [(ngModel)]="password" #passwordInput="ngModel"></ion-input>
       </ion-item>
     </ion-list>
 
-    <ion-button expand="full" [disabled]="!loginForm.form.valid" (click)="signInClicked()" color="tertiary"
-      >Sign in</ion-button
-    >
+    <ion-button expand="full" (click)="signInClicked()" color="tertiary">Sign in</ion-button>
     <div class="unlock-app ion-text-center" *ngIf="displayVaultLogin" (click)="unlockClicked()">
       <ion-icon name="lock-open"></ion-icon>
       <div>{{ loginType }}</div>
@@ -34,5 +32,6 @@
     <div class="error-message">
       {{ errorMessage }}
     </div>
+    Test
   </form>
 </ion-content>

@@ -49,6 +49,10 @@ export class IdentityService extends IonicIdentityVaultUser<MemberSesssion> {
     });
   }
 
+  getUser() {
+    return this.user;
+  }
+
   get(): Observable<User> {
     if (!this.user) {
       return this.http.get<User>(`${environment.dataService}/users/current`).pipe(tap(u => (this.user = u)));

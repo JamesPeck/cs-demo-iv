@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthMode } from '@ionic-enterprise/identity-vault';
-
+import { Storage } from '@ionic/storage';
 import { AuthenticationService, IdentityService, SettingsService } from '@app/services';
 
 @Component({
@@ -14,12 +14,15 @@ export class SettingsPage implements OnInit {
   usePasscode: boolean;
   useSecureStorageMode: boolean;
   biometricType: string;
+  previousUser: string;
+  showSettings: boolean = true;
 
   constructor(
     private authentication: AuthenticationService,
     private identity: IdentityService,
     private navController: NavController,
-    private settings: SettingsService
+    private settings: SettingsService,
+    private storage: Storage
   ) {}
 
   async ngOnInit() {
@@ -27,6 +30,12 @@ export class SettingsPage implements OnInit {
     await this.setAuthModeFlags();
     const type = await this.identity.getBiometricType();
     this.biometricType = this.translateBiometricType(type);
+    this.previousUser = await this.storage.get('previousUser');
+    const user = await this.identity.getUser();
+    // user.email
+    // if (this.previousUser != user.email) {
+    //   this.showSettings = false;
+    // }
   }
 
   logout() {

@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-text-center ion-padding">
+<ion-content class="ion-text-center ion-padding" *ngIf="showSettings">
   <ion-list>
     <ion-item>
       <ion-label>Use Biometrics ({{ biometricType }})</ion-label>
